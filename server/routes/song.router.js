@@ -1,5 +1,24 @@
 const express = require('express');
 const router = express.Router();
+const pg = require('pg');
+
+const Pool = pg.Pool;
+const pool = new Pool({
+    database: '',
+    host: 'localhost',
+    port: 5432, // the port for your database, (this is default for postgress)
+    max: 10,//how many connections (quires) at one time 
+    idleTimeoutMillis: 30000// 30 seconds try to connect - otherwise cancel 
+});
+
+pool.on('connect', () => {
+    console.log ("Postgresql Connected");
+});
+
+pool.on('error', (error) => {
+    console.log("error with postgress pool", error);
+});
+
 
 // static content. this will be replaced with a database table
 const songListArray = [
@@ -16,8 +35,11 @@ const songListArray = [
 ];
 
 router.get('/', (req, res) => {
-    console.log(`In /songs GET`);
-    res.send(songListArray);
+    let queryText ='SELECT * FROM "songs";'
+    pool.query(queryText).then((result)=>{
+        console.log(`In /songs GET`, result.rows);
+        res.send(result.rows);
+    });
 });
 
 router.post('/', (req, res) => {

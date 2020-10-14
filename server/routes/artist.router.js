@@ -3,7 +3,6 @@ const router = express.Router();
 const pg = require('pg');
 
 const Pool = pg.Pool; // Class
-
 // Connect Node to our database
 const pool = new Pool({
     database: 'jazzy_ajax', // name of our database
